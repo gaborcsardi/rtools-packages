@@ -8,7 +8,9 @@ arch=('any')
 url='https://oss.oetiker.ch/rrdtool/index.en.html'
 license=('GPL2')
 makedepends=("autoconf" "automake" "libtool")
-depends=("${MINGW_PACKAGE_PREFIX}-glib2")
+depends=("${MINGW_PACKAGE_PREFIX}-glib2"
+         "${MINGW_PACKAGE_PREFIX}-pango"
+         "${MINGW_PACKAGE_PREFIX}-libxml2")
 source=("https://github.com/oetiker/rrdtool-1.x/releases/download/v${pkgver}/${_realname}-${pkgver}.tar.gz")
 sha256sums=('a199faeb7eff7cafc46fac253e682d833d08932f3db93a550a4a5af180ca58db')
 
@@ -20,6 +22,7 @@ prepare() {
 
 
 build() {
+  export LIBS=$(pkg-config --libs-only-l --static libxml-2.0)
   cd "${srcdir}"/build-${CARCH}
   ./configure \
     --prefix=${MINGW_PREFIX} \
@@ -34,10 +37,7 @@ build() {
     --disable-nls \
     --disable-perl \
     --disable-mmap \
-    --disable-ruby \
-    --disable-rrdcached \
-    --disable-rrd_graph \
-    --disable-rrd_restore
+    --disable-ruby
 
   make CFLAGS='-D__USE_MINGW_ANSI_STDIO=1'
 }
